@@ -1,0 +1,60 @@
+---
+# tasks file for ansible-netsnmp
+- name: Configure /etc/snmp directory
+  file:
+    state: directory
+    path: /etc/snmp
+    owner: root
+    group: root
+    mode: 0755
+  notify: restart snmpd
+
+- name: Configure logging level
+  lineinfile:
+    dest: /etc/sysconfig/snmpd.conf
+    regexp: '^(#)?(\s)?OPTIONS="-LS(.*)d(.*)"'
+    line: 'OPTIONS="-LS{{ snmpd_loglevel}}\4"'
+    backrefs: yes
+  when: ansible_os_family == 'RedHat'
+  notify: restart snmpd
+
+- name: Configure logging level 
+    dest: /etc/sysconfig/net-snmp
+    regexp: '^SNMPD_LOGLEVEL="."'
+    line: 'SNMPD_LOGLEVEL="{{ snmpd_loglevel}}"'
+  when: ansible_os_family == 'Suse'
+  notify: restart snmpd
+
+- name: Deploy Solaris 10 snmpd service manifest xml
+  copy:
+    src: snmpd.xml
+    dest: /var/svc/manifest/network/snmpd.xml
+    owner: root
+    group: sys
+    mode: 0444
+  when:
+  - ansible_distribution == 'Solaris'
+  - ansible_distribution_version == '10'
+  notify: import snmpd smf service
+
+- name: Deploy Solaris 10 snmpd method script
+  template:
+    src: snmpd.j2
+    dest: /lib/svc/method/snmpd
+    owner: root
+    group: bin
+    mode: 0555
+  when:
+  - ansible_distribution == 'Solaris'
+  - ansible_distribution_version == '10'
+  notify: restart snmpd
+
+- name: Deploy snmpd configuration
+  template:
+    src: snmpd.conf.j2
+    dest: /etc/snmp/snmpd.conf
+    owner: root
+    group: root
+    mode: 0640
+  notify: restart snmpd
+

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+
+<service_bundle type='manifest' name='snmpd'>
+  <service
+    name='network/snmpd'
+    type='service'
+    version='1'>
+    <create_default_instance enabled='false' />
+    <single_instance />
+
+    <dependency
+      name='multi-user-server'
+      grouping='require_all'
+      type='service'
+      restart_on='none'>
+        <service_fmri value='svc:/milestone/multi-user-server' />
+    </dependency>
+    <exec_method
+      type='method'
+      name='start'
+      exec='/lib/svc/method/snmpd start'
+      timeout_seconds='60'>
+    </exec_method>
+
+    <exec_method
+      type='method'
+      name='restart'
+      exec='/lib/svc/method/snmpd restart'
+      timeout_seconds='60'>
+    </exec_method>
+
+    <exec_method
+      type='method'
+      name='stop'
+      exec='/lib/svc/method/snmpd stop'
+      timeout_seconds='60' >
+    </exec_method>
+
+    <template>
+      <common_name>
+        <loctext xml:lang='C'>
+          Net-SNMP daemon
+        </loctext>
+      </common_name>
+      <documentation>
+        <doc_link name='net-snmp.org' uri='http://www.net-snmp.org/' />
+      </documentation>
+    </template>
+  </service>
+</service_bundle>

@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# /etc/init.d/snmpd
+# init script for Net-SNMP
+#
+RETVAL=0
+
+snmpd_start() {
+  echo Starting snmpd...
+  /usr/sfw/sbin/snmpd -c /etc/snmp/snmpd.conf -LS{{ snmpd_loglevel }}d -P /var/run/snmpd.pid
+  RETVAL=$?
+}
+snmpd_stop() {
+  echo Stopping snmpd...
+  kill -9 `cat /var/run/snmpd.pid` && rm /var/run/snmpd.pid
+  RETVAL=$?
+}
+case "$1" in
+  start)
+    snmpd_start
+    ;;
+  stop)
+    snmpd_stop
+    ;;
+  restart)
+    snmpd_stop
+    snmpd_start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;
+esac
+
+exit $RETVAL
