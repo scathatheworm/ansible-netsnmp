@@ -1,5 +1,5 @@
 # {{ ansible_managed }}
-agentaddress udp:{{ snmpd_port }}{{% if snmpd_ipv6_enabled &},udp6:[::1]:{{ snmpd_port }}{% endif %}
+agentaddress udp:{{ snmpd_port }}{% if snmpd_ipv6_enabled %},udp6:[::1]:{{ snmpd_port }}{% endif %}
 
 {% if snmpd_sysLocation is defined %}
 sysLocation {{ snmpd_sysLocation }}
@@ -11,6 +11,7 @@ sysContact {{ snmpd_sysContact }}
 sysName {{ snmpd_sysName }}
 {% elif snmpd_sysName_ansible_inventory_hostname %}
 sysName {{ inventory_hostname }}
+{% else %}
 {% endif %}
 {% if snmpd_views is defined %}
 
@@ -23,7 +24,8 @@ view {{ view.name }} included {{ view.tree_object }}
 
 # Define (trap)community access control list
 {% for acl in snmpd_community_acl %}
-{{ acl.type }} {{ acl.community_name }}{% if acl.view is defined %} -V {{ acl.view }}{% endif %}{% if acl.network is defined %} {{ acl.network }}{% endif %}
+{{ acl.type }} {{ acl.community_name }}{% if acl.network is defined %} {{ acl.network }}{% endif %}{% if acl.view is defined %} -V {{ acl.view }}{% endif %}
+
 {% endfor %}
 {% endif %}
 {% if snmpd_trap_destionation is defined %}
@@ -31,17 +33,20 @@ view {{ view.name }} included {{ view.tree_object }}
 # Trap notifications handling
 {% for trapentity in snmpd_trap_destionation %}
 {{ trapentity.type }} {{ trapentity.host }}{%if trapentity.community is defined %} {{ trapentity.community }}{% endif %}{% if trapentity.port is defined %} {{ trapentity.port }}{% endif %}
+
 {% endfor %}
 {% endif %}
 {% if snmpd_auth_traps %}
 
 authtrapenable 1
 {% endif %}
+
 {% if snmpd_enable_agentx %}
 
 # Enable master Agent Extensibility Protocol
 agentx master
 {% endif %}
+
 {% if snmpd_additional_config %}
 # Additional configuration
 

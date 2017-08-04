@@ -1,9 +1,10 @@
 ---
 # handlers file for ansible-netsnmp
-- name: Import snmpd smf service
-  shell: svccfg import snmpd.xml
+- name: import snmpd smf service
+  shell: /usr/sbin/svccfg import snmpd.xml
   args:
     chdir: /var/svc/manifest/network
+  notify: restart snmpd
 
 - name: restart snmpd
   service:

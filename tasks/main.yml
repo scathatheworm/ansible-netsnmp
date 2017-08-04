@@ -1,5 +1,12 @@
 ---
 # tasks file for ansible-netsnmp
+- name: Install packages
+  package:
+    name: net-snmp
+    state: present
+  when:
+  - ansible_distribution != 'Solaris'
+
 - name: Configure /etc/snmp directory
   file:
     state: directory
@@ -11,14 +18,15 @@
 
 - name: Configure logging level
   lineinfile:
-    dest: /etc/sysconfig/snmpd.conf
+    dest: /etc/sysconfig/snmpd
     regexp: '^(#)?(\s)?OPTIONS="-LS(.*)d(.*)"'
-    line: 'OPTIONS="-LS{{ snmpd_loglevel}}\4"'
+    line: 'OPTIONS="-LS{{ snmpd_loglevel}}d -Lf /dev/null -p /var/run/snmpd.pid"'
     backrefs: yes
   when: ansible_os_family == 'RedHat'
   notify: restart snmpd
 
 - name: Configure logging level 
+  lineinfile:
     dest: /etc/sysconfig/net-snmp
     regexp: '^SNMPD_LOGLEVEL="."'
     line: 'SNMPD_LOGLEVEL="{{ snmpd_loglevel}}"'
