@@ -18,8 +18,8 @@
 
 - name: Configure logging level
   lineinfile:
-    dest: /etc/sysconfig/snmpd
-    regexp: '^(#)?(\s)?OPTIONS="-LS(.*)d(.*)"'
+    dest: "/etc/sysconfig/snmpd{{ '.options' if ansible_distribution_major_version|int == 5 else ''}}"
+    regexp: '^(#)?(\s)?OPTIONS="-L(.*)d(.*)"'
     line: 'OPTIONS="-LS{{ snmpd_loglevel}}d -Lf /dev/null -p /var/run/snmpd.pid"'
     backrefs: yes
   when: ansible_os_family == 'RedHat'
