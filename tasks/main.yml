@@ -66,3 +66,8 @@
     mode: 0640
   notify: restart snmpd
 
+- name: Enable snmp daemon
+  service:
+    name: snmpd
+    enabled: true
+    state: started
