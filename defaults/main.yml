@@ -35,10 +35,12 @@ snmpd_community_acl:
   community_name: public
   view: systemview
   network: 127.0.0.1
+  oid: '.1.3.6.1.2.1.1'
 - type: rwcommunity
   community_name: private
   view: systemview
   network: 127.0.0.1
+  oid: '.1.3.6.1.2.1.1'
 - type: trapcommunity
   community_name: trapcommunity
 

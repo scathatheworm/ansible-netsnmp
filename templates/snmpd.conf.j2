@@ -24,7 +24,7 @@ view {{ view.name }} included {{ view.tree_object }}
 
 # Define (trap)community access control list
 {% for acl in snmpd_community_acl %}
-{{ acl.type }} {{ acl.community_name }}{% if acl.network is defined %} {{ acl.network }}{% endif %}{% if acl.view is defined %} -V {{ acl.view }}{% endif %}
+{{ acl.type }} {{ acl.community_name }}{% if acl.network is defined %} {{ acl.network }}{% endif %}{% if acl.view is defined and ansible_system == 'Linux' %} -V {{ acl.view }}{% elif acl.oid is defined %} {{ acl.oid }}{% endif %}
 
 {% endfor %}
 {% endif %}
@@ -41,7 +41,7 @@ view {{ view.name }} included {{ view.tree_object }}
 authtrapenable 1
 {% endif %}
 
-{% if snmpd_enable_agentx %}
+{% if snmpd_enable_agentx and ansible_system == 'Linux' %}
 
 # Enable master Agent Extensibility Protocol
 agentx master
