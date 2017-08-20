@@ -43,7 +43,7 @@
   when:
   - ansible_distribution == 'Solaris'
   - ansible_distribution_version == '10'
-  notify: import snmpd smf service
+  register: snmpdxml
 
 - name: Deploy Solaris 10 snmpd method script
   template:
@@ -64,6 +64,13 @@
     owner: root
     group: root
     mode: 0640
+  notify: restart snmpd
+
+- name: import snmpd smf service
+  shell: /usr/sbin/svccfg import snmpd.xml
+  args:
+    chdir: /var/svc/manifest/network
+  when: snmpdxml.changed
   notify: restart snmpd
 
 - name: Enable snmp daemon
