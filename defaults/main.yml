@@ -50,7 +50,7 @@ snmpd_community_acl:
 # optional, the default is 162. Community is also optional, but if used, it
 # must be defined above in Access Control using snmpd_community_acl as a
 # trapcommunity
-snmpd_trap_destionation:
+snmpd_trap_destination:
 - type: trapsink
   host: 127.0.0.1
   community: trapcommunity
